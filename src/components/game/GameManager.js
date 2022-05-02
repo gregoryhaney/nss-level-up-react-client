@@ -1,3 +1,4 @@
+
 export const getGames = () => {
     return fetch("http://localhost:8000/games", {
         headers:{
@@ -7,7 +8,30 @@ export const getGames = () => {
         .then(response => response.json())
 }
 /*
- The Authorization in the Header is used to retrieve the value of the
+ ABOVE: the Authorization in the Header retrieves the value of the
  currently-logged-in-user's token. It will be in every fetch call to 
  the DB to let the server know which user is logged in
  */
+
+ // FN to create a new game
+ export const createGame = (game) => {
+     return fetch("http://localhost:8000/games", { 
+    method: "POST",   
+    headers:{
+            "content-type": "application/json",
+            "Authorization": `Token ${localStorage.getItem("lu_token")}`
+        },
+    body: JSON.stringify(game)
+    })
+         .then(response => response.json())
+}
+
+// FN to fetch the Game Types
+export const getGameTypes = () => {
+    return fetch("http://localhost:8000/gametypes", { 
+        headers:{
+            "Authorization": `Token ${localStorage.getItem("lu_token")}`
+        }
+    })
+        .then()
+}
