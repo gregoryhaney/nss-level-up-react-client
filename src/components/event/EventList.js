@@ -8,6 +8,17 @@ export const EventList = (props) => {
     const [ events, setEvents ] = useState([])
     const history = useHistory()
 
+    const deleteEvent = (id) => {
+        fetch(`http://localhost:8000/events/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Token ${localStorage.getItem("lu_token")}`
+            }
+        })
+                .then(getEvents())
+    }
+
+
     useEffect(() => {
         getEvents().then(data => setEvents(data))
     }, [])
@@ -34,6 +45,14 @@ export const EventList = (props) => {
                                    history.push(`events/update/${event.id}`)
                                 }}
                                     >Edit This Event</button>
+                                </article>
+
+                                <article className="deleteEventButton">
+                                <button className="btn btn-3 btn-sep icon-create"
+                                onClick={() => {
+                                   deleteEvent(event.id)
+                                }}
+                                    >Delete This Event</button>
                                 </article>
                     </section>
                 })
