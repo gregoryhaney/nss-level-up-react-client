@@ -1,3 +1,5 @@
+
+
 export const getEvents = () => {
     return fetch("http://localhost:8000/events", {
         headers:{
@@ -24,4 +26,29 @@ export const getEvents = () => {
    body: JSON.stringify(event)
    })
         .then(response => response.json())
+}
+
+
+export const getEventToEdit = (id) => {
+    return fetch(`http://localhost:8000/events/${id.id}`, {
+        headers:{
+            "Authorization": `Token ${localStorage.getItem("lu_token")}`
+        }
+    })        
+}
+
+
+export const updateEvent = () => {
+    const fetchOption = {
+        method: "PUT",
+        headers:  {
+            "Content-Type": "application/json",
+            "Authorization": `Token ${localStorage.getItem("lu_token")}`
+        },
+        body: JSON.stringify(editEvent)
+    }
+    return fetch (`http://localhost:8000/events/${id.id}`, fetchOption)
+        .then(() => {
+            history.push("/events")
+        })
 }

@@ -7,7 +7,7 @@ import { useHistory } from "react-router-dom"
 export const EventList = (props) => {
     const [ events, setEvents ] = useState([])
     const history = useHistory()
-    
+
     useEffect(() => {
         getEvents().then(data => setEvents(data))
     }, [])
@@ -28,6 +28,13 @@ export const EventList = (props) => {
                     return <section key={`event--${event.id}`} className="event">
                         <div className="event__description">{event.description}</div>
                         <div className="event__when">will be held on {event.date} at {event.time}</div>
+                                <article className="editEventButton">
+                                <button className="btn btn-4 btn-sep icon-create"
+                                onClick={() => {
+                                   history.push(`events/update/${event.id}`)
+                                }}
+                                    >Edit This Event</button>
+                                </article>
                     </section>
                 })
             }

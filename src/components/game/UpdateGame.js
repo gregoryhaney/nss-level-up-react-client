@@ -1,59 +1,89 @@
 /*
-    The purpose of this component is to provide a form for
-    creating a new game and adding it to the DB.
+    The purpose of this component is to provide for the
+    ability to update a game's data using a form.
 */
 
-import React, { useState, useEffect } from "react"
-import { useHistory } from 'react-router-dom'
-import { createGame, getGameTypes } from './GameManager.js'
 
-export const GameForm = () => {      
-    /*
-        Since the input fields are bound to the values of
-        the properties of this state variable, you need to
-        provide some default values.
-    */
-    const [game, updateGame] = useState({
-        skillLevel: 1,
-        numberOfPlayers: 0,
-        title: "",
-        maker: "",
-        gameTypeId: 0
-    })
+/*        TODO:
+    When the form renders, existing data pre-fills the form's
+    fields, with one exception: the Game Type dropdown.
+        The dropdown should show the current value from the DB.ß
+
+*/
+
+
+import React, { useEffect, useState } from "react"
+import { getGameTypes, getGameToEdit } from "./GameManager.js"
+import { useHistory, useParams } from "react-router-dom"
+
+export const UpdateGame = () => {      
     const history = useHistory()
-    const [gameTypes, setGameTypes] = useState([])
+    const id = useParams()
+   
+    const [ game, updateGame ] = useState({})
+    const [ gameToEdit, setGameToEdit ] = useState([])
+    const [ gameTypes, setGameTypes ] = useState([])
     
-    useEffect(() => {
-        // Get the game types, then set the state
-        getGameTypes()
-        .then(res => res.json())
-        .then((gameTypesArray) => {
-            setGameTypes(gameTypesArray)
-        })
-    }, [])
+    
+         // get the game to be updated from the DB
+        
+        useEffect (
+            () => {
+                getGameToEdit(id)
+                   .then(res => res.json())
+                    .then((editGameArray) => {
+                        setGameToEdit(editGameArray)
+                    })
+                },
+                    [])
 
-    const submitGame = (evt) => {
-        // the onChange function to build the new Game object
-        const newGame = {
+                 // Get the game types, then set the state
+
+        useEffect (
+            () => {  
+                getGameTypes()
+                    .then(res => res.json())
+                    .then((gameTypesArray) => {
+                        setGameTypes(gameTypesArray)
+                    })
+                },
+                    [])
+
+ 
+             // object builder           
+        const editGame = {
             title: game.title,
             maker: game.maker,
             number_of_players: game.numberOfPlayers,
             skill_level: game.skillLevel,
-            game_type_id: game.gameTypeId
+            game_type: game.gameTypeId
         }
-       createGame(newGame)
-            .then(() => {
-                history.push("/games")
-            })
-    }
+
+            // FN to handle the PUT action for the newly build game object
+            // it is called when user clicks "Save Changes" button
+        const makeTheUpdate = () => {
+            const fetchOption = {
+                method: "PUT",
+                headers:  {
+                    "Content-Type": "application/json",
+                    "Authorization": `Token ${localStorage.getItem("lu_token")}`
+                },
+                body: JSON.stringify(editGame)
+            }
+            return fetch (`http://localhost:8000/games/${id.id}`, fetchOption)
+                .then(() => {
+                    history.push("/games")
+                })
+        }
+    
 
     return (
-        <form className="gameForm">
-            <h2 className="gameForm__title">Register New Game</h2>
+        <form className="updateGameForm">
+            <h2 className="updateGameForm__title">Update the Game Data</h2>
                 <fieldset>
                     <div className="form-group">
                         <label htmlFor="title">Title: </label>
-                        <input type="text" name="title" required autoFocus className="form-control"
+                        <input type="text" name="title" required autoFocus className="form-control" placeholder={gameToEdit.title}
                             value={game.title}
                             onChange={
                                 (evt) => {
@@ -69,7 +99,7 @@ export const GameForm = () => {
                 <fieldset>
                         <div className="form-group">
                             <label htmlFor="maker">Maker: </label>
-                            <input type="text" name="maker" required autoFocus className="form-control"
+                            <input type="text" name="maker" required autoFocus className="form-control" placeholder={gameToEdit.maker}
                                 value={game.maker}
                                 onChange={
                                     (evt) => {
@@ -85,7 +115,7 @@ export const GameForm = () => {
                 <fieldset>
                         <div className="form-group">
                             <label htmlFor="numberOfPlayers">Number of Players: </label>
-                            <input type="number" name="numberOfPlayers" required autoFocus className="form-control"
+                            <input type="number" name="numberOfPlayers" required autoFocus className="form-control" placeholder={gameToEdit.number_of_players}
                                 value={game.number_of_players}
                                 onChange={
                                     (evt) => {
@@ -101,7 +131,7 @@ export const GameForm = () => {
                 <fieldset>
                         <div className="form-group">
                             <label htmlFor="skillLevel">Skill Level: </label>
-                            <input type="text" name="skillLevel" required autoFocus className="form-control"
+                            <input type="text" name="skillLevel" required autoFocus className="form-control" placeholder={gameToEdit.skill_level}
                                 value={game.skill_level}
                                 onChange={
                                     (evt) => {
@@ -142,9 +172,9 @@ export const GameForm = () => {
                 onClick={evt => {
                     // Prevent form from being submitted
                     evt.preventDefault()
-                        submitGame(game)
+                        {makeTheUpdate()}
                 }}
-                className="btn btn-primary">Create</button>
+                button className="btn btn-4 btn-sep icon-create">Save Changes</button>
         </form>
     )
 }
