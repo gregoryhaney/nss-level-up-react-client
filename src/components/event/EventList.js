@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { getEvents } from "./EventManager.js"
 import { useHistory } from "react-router-dom"
-
+import { joinEvent, leaveEvent } from "./EventManager.js"
 
 // FN to list all all the events
 export const EventList = (props) => {
@@ -22,6 +22,8 @@ export const EventList = (props) => {
     useEffect(() => {
         getEvents().then(data => setEvents(data))
     }, [])
+
+   
 
     return (
         <article className="events">
@@ -54,9 +56,46 @@ export const EventList = (props) => {
                                 }}
                                     >Delete This Event</button>
                                 </article>
+                                    {
+                                        event.joined ?
+                                <article className="leaveEventButton">
+                                <button className="btn btn-1 btn-sep icon-create"
+                                onClick={() => {
+                                   leaveEvent(event.id)
+                                }}
+                                    >Leave This Event</button>
+                                </article>                                
+                                :
+                                <article className="joinEventButton">       
+                                <button className="btn btn-2 btn-sep icon-create"
+                                onClick={() => {
+                                   joinEvent(event.id)
+                                }}
+                                    >Join This Event</button>
+                                </article>
+                                }
                     </section>
                 })
             }
         </article>
     )
 }
+
+
+    /*
+        ABOVE, within the events.map, the .joined property is used to encapsulate
+        the LEAVE and JOIN buttons. The .joined code block works like this:
+            {
+                event.joined ?
+                    BUILD LEAVE BUTTON HERE
+                :
+                    BUILD JOIN BUTTON HERE
+            }
+        It operates as: 'if true, do this' ELSE 'do this'. In this case, if
+        the user is joined to the event, the LEAVE button will be visible,
+        otherwise, the user has NOT joined the event, so the JOIN button will
+        be visible. The button will flip between JOIN and LEAVE, depending on
+        the user's status for the event.
+    */
+
+

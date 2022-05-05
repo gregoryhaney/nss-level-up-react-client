@@ -52,3 +52,24 @@ export const updateEvent = () => {
             history.push("/events")
         })
 }
+
+
+export const leaveEvent = id => {
+    fetch(`http://localhost:8000/events/${id}/leave`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Token ${localStorage.getItem("lu_token")}`
+        }
+    })
+                .then(getEvents())
+}
+
+export const joinEvent = id => {
+    fetch(`http://localhost:8000/events/${id}/signup`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Token ${localStorage.getItem("lu_token")}` 
+        }
+    })
+                .then(getEvents())
+}
